@@ -2,19 +2,18 @@
     <plugins workers="4">
         <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
     </plugins>
-    <destinations default="local">
+    <destinations default="singularity">
         <destination id="local" runner="local"/>
-        <destination id="interactive_local" runner="local">
-            <param id="docker_enabled">true</param>
-            <param id="docker_volumes">$defaults</param>
-            <param id="docker_sudo">false</param>
-            <param id="docker_net">bridge</param>
-            <param id="docker_auto_rm">true</param>
-            <param id="docker_set_user"></param>
-            <param id="require_container">true</param>
+        <destination id="singularity" runner="local">
+            <param id="singularity_enabled">true</param>
+            <!-- Ensuring a consistent collation environment is good for reproducibility. -->
+            <env id="LC_ALL">C</env>
+            <!-- The cache directory holds the docker containers that get converted. -->
+            <env id="SINGULARITY_CACHEDIR">/tmp/singularity</env>
+            <!-- Singularity uses a temporary directory to build the squashfs filesystem. -->
+            <env id="SINGULARITY_TMPDIR">/tmp</env>
         </destination>
      </destinations>
     <tools>
-        <tool destination="interactive_local" id="interactive_tool_ethercalc" />
     </tools>
  </job_conf>

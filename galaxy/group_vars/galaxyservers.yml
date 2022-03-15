@@ -15,14 +15,15 @@ postgresql_backup_dir: /data/backups
 postgresql_backup_local_dir: "{{ '~postgres' | expanduser }}/backups"
 
 galaxy_config_templates:
-  #- src: templates/galaxy/config/tool_conf_interactive.xml.j2
-    #dest: "{{ galaxy_config_dir }}/tool_conf_interactive.xml"
+# - src: templates/galaxy/config/tool_conf_interactive.xml.j2
+#  dest: "{{ galaxy_config_dir }}/tool_conf_interactive.xml"
   - src: templates/galaxy/config/job_conf.xml.j2
     dest: "{{ galaxy_config_dir }}/job_conf.xml"
+  - src: templates/galaxy/config/container_resolvers_conf.xml.j2
+    dest: "{{ galaxy_config.galaxy.containers_resolvers_config_file }}"
+  - src: templates/galaxy/config/dependency_resolvers_conf.xml
+    dest: "{{ galaxy_config.galaxy.dependency_resolvers_config_file }}"
 
-galaxy_tool_config_files:
-  - "{{ galaxy_server_dir }}/config/tool_conf.xml"
-#  - "{{ galaxy_config_dir }}/tool_conf_interactive.xml"
 
 # Galaxy
 galaxy_create_user: true
@@ -41,12 +42,14 @@ galaxy_config:
     brand: "RossGalaxy"
     admin_users: ross.lazarus@gmail.com
     database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
+    dependency_resolvers_config_file: "{{ galaxy_config_dir }}/dependency_resolvers_conf.xml"
+    containers_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
     file_path: /data
     check_migrate_tools: false
     tool_data_path: "{{ galaxy_mutable_data_dir }}/tool-data"
     tool_data_table_config_path: /cvmfs/data.galaxyproject.org/byhand/location/tool_data_table_conf.xml,/cvmfs/data.galaxyproject.org/managed/location/tool_data_table_conf.xml
-    tool_config_file: "{{ galaxy_config_dir }}/job_conf.xml "
-    #, {{ galaxy_config_dir }}/tool_conf_interactive.xml"
+#    tool_config_file: "{{ galaxy_config_dir }}/job_conf.xml "
+#, {{ galaxy_config_dir }}/tool_conf_interactive.xml"
     object_store_store_by: uuid
     id_secret: "{{ vault_id_secret }}"
     # SQL Performance
