@@ -1,0 +1,3 @@
+[galaxyservers]
+ross.genomicsvl-students.cloud.edu.au ansible_connection=ssh ansible_user=ubuntu ansible_sudo=yes
+# ross2.genomicsvl-students.cloud.edu.au  ansible_connection=ssh ansible_user=ubuntu ansible_sudo=yes

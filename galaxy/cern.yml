@@ -1,0 +1,15 @@
+---
+- hosts: galaxyservers
+  vars:
+    galaxy_server_dir: /srv/galaxy
+    galaxy_root: /galaxy
+  become: true
+  become_user: root
+  vars_files:
+    - group_vars/secret.yml
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name: ['acl', 'bzip2', 'git', 'make', 'python3-psycopg2', 'tar', 'virtualenv']
+  roles:
+    - galaxyproject.cvmfs

@@ -1,0 +1,20 @@
+<job_conf>
+    <plugins workers="4">
+        <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
+    </plugins>
+    <destinations default="local">
+        <destination id="local" runner="local"/>
+        <destination id="interactive_local" runner="local">
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$defaults</param>
+            <param id="docker_sudo">false</param>
+            <param id="docker_net">bridge</param>
+            <param id="docker_auto_rm">true</param>
+            <param id="docker_set_user"></param>
+            <param id="require_container">true</param>
+        </destination>
+     </destinations>
+    <tools>
+        <tool destination="interactive_local" id="interactive_tool_ethercalc" />
+    </tools>
+ </job_conf>
