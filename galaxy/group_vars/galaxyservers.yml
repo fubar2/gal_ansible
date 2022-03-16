@@ -102,7 +102,7 @@ galaxy_config:
       - lib/galaxy/main.py
       - lib/galaxy/main.py
     farm: job-handlers:1,2
-
+    socket-timeout: 300
 
 # systemd
 galaxy_manage_systemd: yes
@@ -145,6 +145,7 @@ golang_gopath: '/opt/workspace-go'
 # Singularity target version
 singularity_version: "3.7.4"
 singularity_go_path: "{{ golang_install_dir }}"
+galaxy_tools_tool_list: tools/tool_list.yaml
 ## Interactive Tools
 #docker_install_compose: false
 #docker_users:
@@ -157,3 +158,10 @@ singularity_go_path: "{{ golang_install_dir }}"
 #gie_proxy_virtualenv: /srv/galaxy/gie-proxy/venv
 #gie_proxy_setup_service: systemd
 #gie_proxy_sessions_path: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
+
+#Toolshed
+galaxy_toolshed_server_dir: "/srv/toolshed"
+galaxy_toolshed_venv_dir: "/galaxy/venv"
+galaxy_toolshed_manage_static_setup: yes
+galaxy_toolshed_manage_database: no
+galaxy_venv_dir: "/galaxy/venv"

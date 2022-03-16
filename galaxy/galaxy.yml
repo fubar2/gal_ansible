@@ -1,5 +1,6 @@
 ---
-- hosts: galaxyservers
+- name: galaxy
+  hosts: galaxyservers
   vars:
     galaxy_server_dir: /srv/galaxy
     galaxy_root: /galaxy

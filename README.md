@@ -13,3 +13,4 @@ working on singularity
 3. there is no undo with ansible...
 4. tool_conf.xml needs some thought - currently just uses sample
 5. ephemeris makes it easy to install tools for workflows !
+6. admin containers view times out. WTF?

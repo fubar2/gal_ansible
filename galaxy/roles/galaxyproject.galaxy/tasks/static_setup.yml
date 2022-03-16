@@ -106,7 +106,7 @@
       template:
         src: "{{ galaxy_config_file_template }}"
         dest: "{{ galaxy_config_file }}"
-        backup: "{{ galaxy_backup_configfiles }}"
+        #backup: "{{ galaxy_backup_configfiles }}"
       notify:
         - "{{ galaxy_restart_handler_name }}"
 
