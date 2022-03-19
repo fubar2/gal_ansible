@@ -12,7 +12,26 @@ server {
     # redirect /prefix -> /prefix/
     rewrite ^$ / ;
     rewrite ^/galaxy$ /galaxy/ ;
-#toolshedconfiginsertaftermarker#
+    location / { # toolshed seems to want to run at root. Must be a way to finesse in gunicorn. TODO fix!
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_pass http://localhost:9009;
+    }
+
+    location /static {
+        alias  /evol/ts/galaxy/galcode/static;
+        expires 24h;
+    }
+
+    location /robots.txt {
+        alias /evol/ts/galaxy/galcode/static/robots.txt;
+    }
+
+    location /favicon.ico {
+        alias /evol/ts/galaxy/galcode/static/favicon.ico;
+    }
 
     location /galaxy/ {
         # This is the backend to send the requests to.

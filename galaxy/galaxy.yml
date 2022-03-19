@@ -2,10 +2,24 @@
 - name: galaxy
   hosts: galaxyservers
   vars:
-    galaxy_server_dir: /evol/srv/galaxy/galcode
     galaxy_root: /evol/srv/galaxy
+    galaxy_server_dir: "{{ galaxy_server_dir }}/galcode"
     galaxy_instance_hostname: ross.genomicsvl-students.cloud.edu.au
     galaxy_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
+    galaxy_server_dir:  "{{ galaxy_root }}/galcode"
+    galaxy_venv_dir: "{{ galaxy_root }}/venv"
+    galaxy_toolshed_server_dir: "{{ galaxy_server_dir }}"
+    galaxy_toolshed_instance_codename: "Test Toolshed"
+    galaxy_toolshed_log_dir: "/evol/ts/logs"
+    galaxy_toolshed_venv_dir: "{{ galaxy_venv_dir }}"
+    galaxy_toolshed_config_dir: "{{ galaxy_server_dir}}/config"
+    galaxy_toolshed_config_file: "{{ galaxy_toolshed_config_dir }}/tool_shed.yml"
+    galaxy_toolshed_mutable_config_dir: "{{ galaxy_root }}/var/config"
+    galaxy_toolshed_mutable_data_dir: "{{ galaxy_root }}/var/data"
+    galaxy_toolshed_config_style: "yaml"
+    galaxy_toolshed_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
+    galaxy_toolshed_config_id_secret: " some silly rand0m t3xt  @#"
+
   become: true
   become_user: root
   vars_files:
@@ -13,7 +27,7 @@
   pre_tasks:
     - name: Install Dependencies
       package:
-        name: ['acl', 'bzip2', 'git', 'make', 'python3-psycopg2', 'tar', 'virtualenv']
+        name: ['acl', 'bzip2', 'git', 'make', 'python3-psycopg2', 'tar', 'virtualenv', 'uwsgi-plugin-python3', 'mercurial']
   roles:
     - galaxyproject.postgresql
     - role: natefoo.postgresql_objects
@@ -23,6 +37,8 @@
     - gantsign.golang
     - cyverse-ansible.singularity
     - galaxyproject.galaxy
+      become: true
+      become_user: "{{ galaxy_user.name }}"
     - role: uchida.miniconda
       become: true
       become_user: "{{ galaxy_user.name }}"
@@ -30,4 +46,6 @@
     - galaxyproject.cvmfs
 #    - geerlingguy.docker
 #    - usegalaxy_eu.gie_proxy
-
+    - role: galaxyproject.galaxy_toolshed
+      become: true
+      become_user: ubuntu
