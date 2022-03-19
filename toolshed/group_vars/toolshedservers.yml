@@ -14,7 +14,7 @@ galaxy_toolshed_config:
 
   tool_shed:
     # secrets
-    id_secret: " {{ galaxy_toolshed_config_id_secret }}"
+    id_secret: "{{ galaxy_toolshed_config_id_secret }}"
     admin_users: "{{ galaxy_toolshed_config_admin_users }}"
     galaxy_separate_privileges: false
     # paths

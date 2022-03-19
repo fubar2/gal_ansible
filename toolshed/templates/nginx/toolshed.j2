@@ -1,14 +1,10 @@
-##
-## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
-##
-
 # Galaxy Tool Shed
 # assumes galaxy has already provided the basis for the server stuff commented out
-server {
+#server {
     #listen       *:443 ssl;
     #server_name {% for domain in certbot_domains %} {{ domain }}{% endfor %};
 
-    location /toolshed {
+    location / {
             proxy_set_header Host $http_host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
@@ -28,4 +24,4 @@ server {
     location /favicon.ico {
         alias {{ galaxy_server_dir }}/static/favicon.ico;
     }
-}
+#}
