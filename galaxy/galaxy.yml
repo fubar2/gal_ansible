@@ -2,8 +2,10 @@
 - name: galaxy
   hosts: galaxyservers
   vars:
-    galaxy_server_dir: /srv/galaxy
-    galaxy_root: /galaxy
+    galaxy_server_dir: /evol/srv/galaxy/galcode
+    galaxy_root: /evol/srv/galaxy
+    galaxy_instance_hostname: ross.genomicsvl-students.cloud.edu.au
+    galaxy_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
   become: true
   become_user: root
   vars_files:
@@ -28,3 +30,4 @@
     - galaxyproject.cvmfs
 #    - geerlingguy.docker
 #    - usegalaxy_eu.gie_proxy
+

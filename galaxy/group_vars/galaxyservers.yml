@@ -26,11 +26,12 @@ galaxy_config_templates:
 
 
 # Galaxy
+galaxy_toolshed_server_dir: "/evol/ts/galaxy/galcode" # hack to precomplete the nginx config with a toolshed
+# todo: needs a blockinsert
 galaxy_create_user: true
 galaxy_separate_privileges: true
 galaxy_manage_paths: true
 galaxy_layout: root-dir
-galaxy_root: /srv/galaxy
 galaxy_user: {name: galaxy, shell: /bin/bash}
 galaxy_commit_id: release_22.01
 galaxy_force_checkout: true
@@ -79,6 +80,9 @@ galaxy_config:
     #interactivetools_map: "{{ gie_proxy_sessions_path }}"
   uwsgi:
     socket: 127.0.0.1:5000
+    #module: galaxy.webapps.galaxy.buildapp:uwsgi_app()
+    mount: /galaxy=galaxy.webapps.galaxy.buildapp:uwsgi_app()
+    manage-script-name: true
     buffer-size: 16384
     processes: 1
     threads: 4
@@ -90,7 +94,6 @@ galaxy_config:
     master: true
     virtualenv: "{{ galaxy_venv_dir }}"
     pythonpath: "{{ galaxy_server_dir }}/lib"
-    module: galaxy.webapps.galaxy.buildapp:uwsgi_app()
     thunder-lock: true
     die-on-term: true
     hook-master-start:
@@ -141,11 +144,11 @@ nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
 # Golang
-golang_gopath: '/opt/workspace-go'
+golang_gopath: '/evol/opt/workspace-go'
 # Singularity target version
 singularity_version: "3.7.4"
 singularity_go_path: "{{ golang_install_dir }}"
-galaxy_tools_tool_list: tools/tool_list.yaml
+
 ## Interactive Tools
 #docker_install_compose: false
 #docker_users:
@@ -159,9 +162,3 @@ galaxy_tools_tool_list: tools/tool_list.yaml
 #gie_proxy_setup_service: systemd
 #gie_proxy_sessions_path: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
 
-#Toolshed
-galaxy_toolshed_server_dir: "/srv/toolshed"
-galaxy_toolshed_venv_dir: "/galaxy/venv"
-galaxy_toolshed_manage_static_setup: yes
-galaxy_toolshed_manage_database: no
-galaxy_venv_dir: "/galaxy/venv"

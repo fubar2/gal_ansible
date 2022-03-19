@@ -1,0 +1,38 @@
+---
+- name: Galaxy toolshed
+  hosts: toolshedservers
+  become: true
+  become_user: root
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name: ['uwsgi-plugin-python3', 'mercurial']
+  vars:
+    galaxy_root: "/evol/ts/galaxy" # another copy - could probably be just one?
+    galaxy_server_dir:  "{{ galaxy_root }}/galcode"
+    galaxy_venv_dir: "{{ galaxy_root }}/venv"
+    galaxy_config_file: "{{ galaxy_toolshed_config_dir }}/tool_shed.yml"
+    galaxy_toolshed_server_dir: "{{ galaxy_server_dir }}"
+    galaxy_toolshed_instance_codename: "Test Toolshed"
+    galaxy_toolshed_log_dir: "/evol/ts/logs"
+    galaxy_toolshed_venv_dir: "{{ galaxy_venv_dir }}"
+    galaxy_toolshed_config_dir: "/evol/ts/config"
+    galaxy_toolshed_config_file: "{{ galaxy_toolshed_config_dir }}/tool_shed.yml"
+    galaxy_toolshed_mutable_config_dir: "/evol/ts/var/config"
+    galaxy_toolshed_mutable_data_dir: "/evol/ts/var/data"
+    galaxy_toolshed_config_style: "yaml"
+    galaxy_toolshed_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
+    galaxy_toolshed_config_id_secret: " some silly rand0m t3xt  @#"
+
+  vars_files:
+    - group_vars/secret.yml
+  roles:
+    - role: galaxyproject.galaxy
+      become: true
+      become_user: ubuntu
+    - role: galaxyproject.galaxy_toolshed
+      become: true
+      become_user: ubuntu
+# temp hack - all toolshed nginx stuff moved to galaxy.j2 in galaxy play
+# TOOL_SHED_CONFIG_FILE="/evol/ts/galaxy/galcode/config/tool_shed.yml"
+...
