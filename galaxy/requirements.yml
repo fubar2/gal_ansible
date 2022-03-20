@@ -20,5 +20,8 @@
   version: 2.6.3
 - src: usegalaxy_eu.certbot
   version: 0.1.5
+- src: galaxyproject.galaxy_toolshed
+  version: 0.2.3
+
 
 

@@ -1,27 +1,27 @@
 ---
 - name: galaxy
   hosts: galaxyservers
+  become: true
+  become_user: root
   vars:
+    galaxy_commit_id: release_21.09
     galaxy_root: /evol/srv/galaxy
-    galaxy_server_dir: "{{ galaxy_server_dir }}/galcode"
+    galaxy_server_dir: "{{ galaxy_root }}/galcode"
     galaxy_instance_hostname: ross.genomicsvl-students.cloud.edu.au
     galaxy_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
-    galaxy_server_dir:  "{{ galaxy_root }}/galcode"
     galaxy_venv_dir: "{{ galaxy_root }}/venv"
     galaxy_toolshed_server_dir: "{{ galaxy_server_dir }}"
-    galaxy_toolshed_instance_codename: "Test Toolshed"
-    galaxy_toolshed_log_dir: "/evol/ts/logs"
-    galaxy_toolshed_venv_dir: "{{ galaxy_venv_dir }}"
-    galaxy_toolshed_config_dir: "{{ galaxy_server_dir}}/config"
-    galaxy_toolshed_config_file: "{{ galaxy_toolshed_config_dir }}/tool_shed.yml"
+    galaxy_toolshed_instance_codename: "TestToolshed"
     galaxy_toolshed_mutable_config_dir: "{{ galaxy_root }}/var/config"
     galaxy_toolshed_mutable_data_dir: "{{ galaxy_root }}/var/data"
+    galaxy_toolshed_log_dir: "{{ galaxy_toolshed_mutable_data_dir }}/logs"
+    galaxy_toolshed_venv_dir: "{{ galaxy_venv_dir }}"
+    galaxy_toolshed_config_dir: "{{ galaxy_root }}/var"
+    galaxy_toolshed_config_file: "{{ galaxy_toolshed_config_dir }}/tool_shed.yml"
     galaxy_toolshed_config_style: "yaml"
     galaxy_toolshed_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
     galaxy_toolshed_config_id_secret: " some silly rand0m t3xt  @#"
 
-  become: true
-  become_user: root
   vars_files:
     - group_vars/secret.yml
   pre_tasks:
@@ -31,21 +31,17 @@
   roles:
     - galaxyproject.postgresql
     - role: natefoo.postgresql_objects
-      become: true
       become_user: postgres
     - geerlingguy.pip
     - gantsign.golang
     - cyverse-ansible.singularity
-    - galaxyproject.galaxy
-      become: true
-      become_user: "{{ galaxy_user.name }}"
-    - role: uchida.miniconda
-      become: true
-      become_user: "{{ galaxy_user.name }}"
-    - galaxyproject.nginx
     - galaxyproject.cvmfs
+    - role: galaxyproject.galaxy
+      become_user: galaxy
+    - role: uchida.miniconda
+      become_user: galaxy
+    - galaxyproject.nginx
 #    - geerlingguy.docker
 #    - usegalaxy_eu.gie_proxy
     - role: galaxyproject.galaxy_toolshed
-      become: true
-      become_user: ubuntu
+      become_user: root

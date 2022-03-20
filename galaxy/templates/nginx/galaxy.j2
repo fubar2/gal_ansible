@@ -21,21 +21,21 @@ server {
     }
 
     location /static {
-        alias  /evol/ts/galaxy/galcode/static;
+        alias  {{ galaxy_server_dir }}/static;
         expires 24h;
     }
 
     location /robots.txt {
-        alias /evol/ts/galaxy/galcode/static/robots.txt;
+        alias {{ galaxy_server_dir }}/static/robots.txt;
     }
 
     location /favicon.ico {
-        alias /evol/ts/galaxy/galcode/static/favicon.ico;
+        alias {{ galaxy_server_dir }}/static/favicon.ico;
     }
 
     location /galaxy/ {
         # This is the backend to send the requests to.
-        uwsgi_pass {{ galaxy_config.uwsgi.socket }};
+        uwsgi_pass 127.0.0.1:5000;
         uwsgi_param UWSGI_SCHEME $scheme;
         include uwsgi_params;
     }

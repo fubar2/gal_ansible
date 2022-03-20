@@ -26,20 +26,22 @@ galaxy_config_templates:
 
 
 # Galaxy
-galaxy_toolshed_server_dir: "/evol/ts/galaxy/galcode" # hack to precomplete the nginx config with a toolshed
-# todo: needs a blockinsert
 galaxy_create_user: true
-galaxy_separate_privileges: true
+galaxy_separate_privileges: false
 galaxy_manage_paths: true
 galaxy_layout: root-dir
 galaxy_user: {name: galaxy, shell: /bin/bash}
-galaxy_commit_id: release_22.01
 galaxy_force_checkout: true
 miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
 miniconda_version: 4.7.12
 miniconda_manage_dependencies: false
 galaxy_config:
+  #gunicorn:
+    #bind: localhost:5000
+    #config: "{{ galaxy_server_dir }}/lib/galaxy/web_stack/gunicorn_config.py"
+    #gunicorn_extra_args: '--forwarded-allow-ips="*"'
   galaxy:
+    galaxy_url_prefix: /galaxy
     brand: "RossGalaxy"
     admin_users: ross.lazarus@gmail.com
     database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
@@ -120,7 +122,7 @@ galaxy_toolshed_config:
     galaxy_separate_privileges: false
     # paths
 
-    file_path: "/evol/ts/{{ galaxy_toolshed_instance_codename }}"
+    file_path: "/evol/srv/{{ galaxy_toolshed_instance_codename }}"
     new_file_path: "{{ galaxy_toolshed_mutable_data_dir }}/tmp"
     tool_data_path: "{{ galaxy_toolshed_mutable_data_dir }}/tool-data"
 
