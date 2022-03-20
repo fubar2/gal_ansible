@@ -41,7 +41,7 @@
     - role: uchida.miniconda
       become_user: galaxy
     - galaxyproject.nginx
-#    - geerlingguy.docker
+    - geerlingguy.docker
 #    - usegalaxy_eu.gie_proxy
     - role: galaxyproject.galaxy_toolshed
       become_user: root

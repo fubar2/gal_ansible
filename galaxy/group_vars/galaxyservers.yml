@@ -36,10 +36,10 @@ miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
 miniconda_version: 4.7.12
 miniconda_manage_dependencies: false
 galaxy_config:
-  #gunicorn:
-    #bind: localhost:5000
-    #config: "{{ galaxy_server_dir }}/lib/galaxy/web_stack/gunicorn_config.py"
-    #gunicorn_extra_args: '--forwarded-allow-ips="*"'
+  gunicorn:
+    bind: localhost:5000
+    config: "{{ galaxy_server_dir }}/lib/galaxy/web_stack/gunicorn_config.py"
+    gunicorn_extra_args: '--forwarded-allow-ips="*" --timeout=600'
   galaxy:
     galaxy_url_prefix: /galaxy
     brand: "RossGalaxy"
@@ -103,10 +103,10 @@ galaxy_config:
       - unix_signal:15 gracefully_kill_them_all
     py-call-osafterfork: true
     enable-threads: true
-    mule:
-      - lib/galaxy/main.py
-      - lib/galaxy/main.py
-    farm: job-handlers:1,2
+    #mule:
+      #- lib/galaxy/main.py
+      #- lib/galaxy/main.py
+    #farm: job-handlers:1,2
     socket-timeout: 300
 
 galaxy_toolshed_config:
