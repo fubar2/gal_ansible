@@ -1,8 +1,0 @@
-- src: galaxyproject.galaxy
-  version: 0.9.16
-- src: galaxyproject.nginx
-  version: 0.7.0
-- src: galaxyproject.galaxy_toolshed
-  version: 0.2.3
-
-
