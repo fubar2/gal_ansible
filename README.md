@@ -3,8 +3,7 @@ Ross ansible futzing based on GTN tutorials
 better late than never
 
 runans.sh will regenerate some secrets and run the playbook
-currently does cvmfs, nginx, letsencryptssl
-working on singularity
+currently does cvmfs, nginx, letsencryptssl, singularity
 
 # Notes to self
 
@@ -18,3 +17,4 @@ working on singularity
 8. run_tool_shed expects TOOL_SHED_CONFIG_FILE to point to tool_shed.yml
 9. gravity will make a lot of things simpler.
 10. galaxy toolshed ansible role tool_shed.yml.j2 makes uwsgi even if you don't want - PR
+11. 22.01 and gravity still not working so using 21.09

@@ -70,9 +70,9 @@ server {
     location /galaxy/favicon.ico {
         alias {{ galaxy_server_dir }}/static/favicon.ico;
     }
-    location /galaxy/_x_accel_redirect {
+    location /_x_accel_redirect/ {
         internal;
-        alias /galaxy;
+        alias /;
     }
 
     # Support click-to-run in the GTN-in-Galaxy Webhook
