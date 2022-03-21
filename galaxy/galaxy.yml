@@ -5,19 +5,22 @@
   become_user: root
   vars:
     galaxy_commit_id: release_21.09
-    galaxy_root: /evol/srv/galaxy
+    galaxy_root: /evol/srv
     galaxy_server_dir: "{{ galaxy_root }}/galcode"
+    galaxy_url_prefix: /galaxy
+    galaxy_tool_dependency_dir: "{{ galaxy_root }}/var/dependencies"
+    galaxy_systemd_mode: '' # do not want
     galaxy_instance_hostname: ross.genomicsvl-students.cloud.edu.au
     galaxy_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
-    galaxy_venv_dir: "{{ galaxy_root }}/venv"
+    #galaxy_venv_dir: "{{ galaxy_root }}/venv"
     galaxy_toolshed_server_dir: "{{ galaxy_server_dir }}"
     galaxy_toolshed_instance_codename: "TestToolshed"
-    galaxy_toolshed_mutable_config_dir: "{{ galaxy_root }}/var/config"
-    galaxy_toolshed_mutable_data_dir: "{{ galaxy_root }}/var/data"
-    galaxy_toolshed_log_dir: "{{ galaxy_toolshed_mutable_data_dir }}/logs"
+    #galaxy_toolshed_mutable_config_dir: "{{ galaxy_root }}/var/config"
+    #galaxy_toolshed_mutable_data_dir: "{{ galaxy_root }}/var/data"
+    #galaxy_toolshed_log_dir: "{{ galaxy_toolshed_mutable_data_dir }}/logs"
     galaxy_toolshed_venv_dir: "{{ galaxy_venv_dir }}"
     galaxy_toolshed_config_dir: "{{ galaxy_root }}/var"
-    galaxy_toolshed_config_file: "{{ galaxy_toolshed_config_dir }}/tool_shed.yml"
+    #galaxy_toolshed_config_file: "{{ galaxy_toolshed_config_dir }}/tool_shed.yml"
     galaxy_toolshed_config_style: "yaml"
     galaxy_toolshed_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
     galaxy_toolshed_config_id_secret: " some silly rand0m t3xt  @#"
@@ -29,18 +32,18 @@
       package:
         name: ['acl', 'bzip2', 'git', 'make', 'python3-psycopg2', 'tar', 'virtualenv', 'uwsgi-plugin-python3', 'mercurial']
   roles:
+    - role: galaxyproject.galaxy
+      become_user: galaxy
+    - galaxyproject.nginx
     - galaxyproject.postgresql
     - role: natefoo.postgresql_objects
       become_user: postgres
     - geerlingguy.pip
+    - role: uchida.miniconda
+      become_user: galaxy
     - gantsign.golang
     - cyverse-ansible.singularity
     - galaxyproject.cvmfs
-    - role: galaxyproject.galaxy
-      become_user: galaxy
-    - role: uchida.miniconda
-      become_user: galaxy
-    - galaxyproject.nginx
     - geerlingguy.docker
 #    - usegalaxy_eu.gie_proxy
     - role: galaxyproject.galaxy_toolshed

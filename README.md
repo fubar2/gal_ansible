@@ -18,3 +18,6 @@ currently does cvmfs, nginx, letsencryptssl, singularity
 9. gravity will make a lot of things simpler.
 10. galaxy toolshed ansible role tool_shed.yml.j2 makes uwsgi even if you don't want - PR
 11. 22.01 and gravity still not working so using 21.09
+12. Using 21.09, no gravity config and some mules/farm in uwsgi allows the stupid mule restart to work. Without mules, or
+with gravity, ansible dies there. Something needs fixin in the galaxyproject.galaxy ansible thing.
+13. Need a location /api pointing to the galaxy fastcgi port to get shed-tools to work right. Does ephemeris respect galaxy's prefix?

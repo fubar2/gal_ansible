@@ -33,7 +33,14 @@ server {
         alias {{ galaxy_server_dir }}/static/favicon.ico;
     }
 
-    location /galaxy/ {
+     location /api {
+     # not sure why, but this is needed even with prefix set
+        uwsgi_pass 127.0.0.1:5000;
+        uwsgi_param UWSGI_SCHEME $scheme;
+        include uwsgi_params;
+    }
+
+   location /galaxy/ {
         # This is the backend to send the requests to.
         uwsgi_pass 127.0.0.1:5000;
         uwsgi_param UWSGI_SCHEME $scheme;

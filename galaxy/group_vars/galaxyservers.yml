@@ -26,6 +26,7 @@ galaxy_config_templates:
 
 
 # Galaxy
+
 galaxy_create_user: true
 galaxy_separate_privileges: false
 galaxy_manage_paths: true
@@ -41,13 +42,24 @@ galaxy_config:
     config: "{{ galaxy_server_dir }}/lib/galaxy/web_stack/gunicorn_config.py"
     gunicorn_extra_args: '--forwarded-allow-ips="*" --timeout=600'
   galaxy:
-    galaxy_url_prefix: /galaxy
+    dependency_resolvers:
+    - type: tool_shed_packages
+    - type: galaxy_packages
+    - type: conda
+    - type: galaxy_packages
+      versionless: true
+    - type: conda
+      versionless: true
+    use_cached_dependency_manager: true
+    galaxy_url_prefix: "/galaxy"
     brand: "RossGalaxy"
+    conda_prefix: "{{ miniconda_prefix }}"
+    conda_auto_install: true
     admin_users: ross.lazarus@gmail.com
     database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
     dependency_resolvers_config_file: "{{ galaxy_config_dir }}/dependency_resolvers_conf.xml"
     containers_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
-    file_path: "{{ galaxy_server_dir}}/database/files"
+    #file_path: "{{ galaxy_server_dir}}/database/files"
     check_migrate_tools: false
     tool_data_path: "{{ galaxy_mutable_data_dir }}/tool-data"
     tool_data_table_config_path: /cvmfs/data.galaxyproject.org/byhand/location/tool_data_table_conf.xml,/cvmfs/data.galaxyproject.org/managed/location/tool_data_table_conf.xml
@@ -60,7 +72,7 @@ galaxy_config:
     slow_query_log_threshold: 5
     enable_per_request_sql_debugging: true
     # File serving Performance
-    nginx_x_accel_redirect_base: /_x_accel_redirect
+    nginx_x_accel_redirect_base: '/_x_accel_redirect'
     # Automation / Ease of Use / User-facing features
     watch_job_rules: 'auto'
     allow_path_paste: true
@@ -77,7 +89,7 @@ galaxy_config:
     allow_user_impersonation: true
     # Tool security
     outputs_to_working_directory: true
-    job_config_file: "{{ galaxy_config_dir }}/job_conf.xml"
+    # job_config_file: "{{ galaxy_config_dir }}/job_conf.xml"
     #interactivetools_enable: true
     #interactivetools_map: "{{ gie_proxy_sessions_path }}"
   uwsgi:
@@ -103,10 +115,10 @@ galaxy_config:
       - unix_signal:15 gracefully_kill_them_all
     py-call-osafterfork: true
     enable-threads: true
-    #mule:
-      #- lib/galaxy/main.py
-      #- lib/galaxy/main.py
-    #farm: job-handlers:1,2
+    mule:
+      - lib/galaxy/main.py
+      - lib/galaxy/main.py
+    farm: job-handlers:1,2
     socket-timeout: 300
 
 galaxy_toolshed_config:
