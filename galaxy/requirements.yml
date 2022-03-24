@@ -1,9 +1,9 @@
 - src: galaxyproject.galaxy
-  version: 0.9.16
+  version: 0.9.18
 - src: galaxyproject.nginx
   version: 0.7.0
 - src: galaxyproject.postgresql
-  version: 1.0.3
+  version: 1.1.0
 - src: natefoo.postgresql_objects
   version: 1.1
 - src: geerlingguy.pip
@@ -11,7 +11,7 @@
 - src: uchida.miniconda
   version: 0.3.0
 - src: galaxyproject.cvmfs
-  version: 0.2.13
+  version: 0.2.14
 - src: geerlingguy.docker
   version: 2.6.0
 - src: cyverse-ansible.singularity

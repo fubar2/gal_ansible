@@ -107,20 +107,20 @@
   when: ___nginx_http_options_results is defined and _nginx_http_options_results is changed and __nginx_http_options_results.backup_file is not defined
 
 # Is this useful or confusing?
-#- name: Re-check config after restoring from backup
-  #command: "{{ nginx_command }} -t -c {{ nginx_conf_file }}"
-  #when: nginx_check_conf and not ansible_check_mode
-  #changed_when: false
-  #ignore_errors: true
-  #register: __nginx_config_retest_results
+- name: Re-check config after restoring from backup
+  command: "{{ nginx_command }} -t -c {{ nginx_conf_file }}"
+  when: nginx_check_conf and not ansible_check_mode
+  changed_when: false
+  ignore_errors: true
+  register: __nginx_config_retest_results
 
-#- name: Fail due to previous configuration installation or validation errors
-  #fail:
-    #msg: >-
-      #{{ (__nginx_config_retest_results is failed) | ternary(
-              #"The new nginx configuration failed to install or validate so the previous configuration was "
-              #"restored, however, the restored configuration also failed to validate, meaning that the previous "
-              #"configuration was invalid or it was not properly restored. Please investigate the errors above for "
-              #"more information.",
-              #"The new nginx configuration failed to install or validate, so the previous configuration has been "
-              #"restored. Please investigate the errors above for more information." ) }}
+- name: Fail due to previous configuration installation or validation errors
+  fail:
+    msg: >-
+      {{ (__nginx_config_retest_results is failed) | ternary(
+              "The new nginx configuration failed to install or validate so the previous configuration was "
+              "restored, however, the restored configuration also failed to validate, meaning that the previous "
+              "configuration was invalid or it was not properly restored. Please investigate the errors above for "
+              "more information.",
+              "The new nginx configuration failed to install or validate, so the previous configuration has been "
+              "restored. Please investigate the errors above for more information." ) }}
