@@ -11,11 +11,10 @@ postgresql_backup_local_dir: "{{ '~postgres' | expanduser }}/backups"
 
 # CVMFS vars
 cvmfs_role: client
-galaxy_cvmfs_repos_enabled: "config-repo"
 cvmfs_quota_limit: 2000
 miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
 #miniconda_version: 4.7.12
-#miniconda_manage_dependencies: false
+miniconda_manage_dependencies: false
 
 
 # systemd

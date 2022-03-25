@@ -2,7 +2,7 @@ server {
     # Listen on port 443
     listen        *:443 ssl default_server;
     # The virtualhost is our domain name
-    server_name   "{{ inventory_hostname }}";
+    server_name   "ross.genomicsvl-students.cloud.edu.au";
     proxy_read_timeout 300;
     proxy_connect_timeout 300;
     proxy_send_timeout 300;
@@ -11,8 +11,8 @@ server {
     error_log   /var/log/nginx/error.log;
     # redirect /prefix -> /prefix/
     rewrite ^$ / ;
-    #rewrite ^/galaxy$ /galaxy/ ;
-    #rewrite ^/galaxy/static/ /static/ ;
+    rewrite ^/galaxy$  /galaxy/ ;
+    rewrite ^/galaxy/static/(.*)$ /static/$1 last;
     location / { # toolshed seems to want to run at root. Must be a way to finesse in gunicorn. TODO fix!
             proxy_set_header Host $http_host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -35,6 +35,8 @@ server {
     }
 
      location /api {
+
+
      # not sure why, but this is needed even with prefix set
         uwsgi_pass 127.0.0.1:5000;
         uwsgi_param UWSGI_SCHEME $scheme;
@@ -49,6 +51,9 @@ server {
         alias /var/www/static/favicon.ico;
     }
 
+    location /galaxy/welcome.html {
+        alias /var/www/static/welcome.html.sample;
+    }
 
    location /galaxy {
         # This is the backend to send the requests to.
@@ -58,10 +63,9 @@ server {
     }
 
 
-
     # serve visualization and interactive environment plugin static content
     location ~ ^/toolshed/plugins/(?<plug_type>[^/]+?)/((?<vis_d>[^/_]*)_?)?(?<vis_name>[^/]*?)/static/(?<static_file>.*?)$ {
-        alias {{ galaxy_server_dir }}/config/plugins/$plug_type/;
+        alias /evol/srv/galcode/config/plugins/$plug_type/;
         try_files $vis_d/${vis_d}_${vis_name}/static/$static_file
                   $vis_d/static/$static_file =404;
     }
