@@ -6,13 +6,13 @@ pip_package: python3-pip                               # geerlingguy.pip
 
 
 # PostgreSQL Backups
-postgresql_backup_dir: /data/backups
+postgresql_backup_dir: /evol/data/backups
 postgresql_backup_local_dir: "{{ '~postgres' | expanduser }}/backups"
 
 # CVMFS vars
 cvmfs_role: client
 galaxy_cvmfs_repos_enabled: "config-repo"
-cvmfs_quota_limit: 2000
+cvmfs_quota_limit: 4000
 miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
 #miniconda_version: 4.7.12
 #miniconda_manage_dependencies: false
@@ -59,6 +59,10 @@ golang_gopath: '/evol/opt/workspace-go'
 # Singularity target version
 singularity_version: "3.7.4"
 singularity_go_path: "{{ golang_install_dir }}"
+
+# systemd
+galaxy_manage_systemd: yes
+galaxy_systemd_env: [DRMAA_LIBRARY_PATH="/usr/lib/slurm-drmaa/lib/libdrmaa.so.1"]
 
 ## Interactive Tools
 docker_install_compose: false

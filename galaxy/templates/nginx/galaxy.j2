@@ -11,8 +11,8 @@ server {
     error_log   /var/log/nginx/error.log;
     # redirect /prefix -> /prefix/
     rewrite ^$ / ;
-    #rewrite ^/galaxy$ /galaxy/ ;
-    #rewrite ^/galaxy/static/ /static/ ;
+    rewrite ^/galaxy$ /galaxy/ ;
+    rewrite ^/galaxy/static/(.*)$ /static/$1;
     location / { # toolshed seems to want to run at root. Must be a way to finesse in gunicorn. TODO fix!
             proxy_set_header Host $http_host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -21,11 +21,15 @@ server {
             proxy_pass http://localhost:9009;
     }
 
-    location /static {
-        alias /var/www/static;
+    location /static/ {
+        alias /var/www/static/;
         expires 24h;
     }
 
+    location /static/welcome.html {
+        alias /var/www/static/welcome.html.sample;
+        expires 24h;
+    }
     location /robots.txt {
         alias /var/www/static/robots.txt;
     }
@@ -52,9 +56,13 @@ server {
 
    location /galaxy {
         # This is the backend to send the requests to.
+        include uwsgi_params;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
         uwsgi_pass 127.0.0.1:5000;
         uwsgi_param UWSGI_SCHEME $scheme;
-        include uwsgi_params;
+        uwsgi_read_timeout 300;
     }
 
 

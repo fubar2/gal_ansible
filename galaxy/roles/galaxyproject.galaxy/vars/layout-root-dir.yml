@@ -1,7 +1,8 @@
 ---
 
 # Layout defaults
-__galaxy_server_dir: "{{ galaxy_root }}/server"
+
+__galaxy_server_dir: "{{ galaxy_server_dir }} | default({{ galaxy_root }}/server) }}"
 __galaxy_venv_dir: "{{ galaxy_root }}/venv"
 __galaxy_config_dir: "{{ galaxy_root }}/config"
 __galaxy_mutable_data_dir: "{{ galaxy_root }}/var"

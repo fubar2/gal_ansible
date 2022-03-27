@@ -7,20 +7,22 @@
     galaxy_config_style: yaml
     galaxy_layout: "root-dir"
     galaxy_root: "/evol/srv/galaxy"
-    galaxy_server_dir: "/evol/srv/galcode"
+    galaxy_server_dir: "/evol/srv/server"
+    galaxy_config_dir: "/evol/srv/server/config" # this seems always set from root at startup as part of privsep
     galaxy_venv_dir: "/evol/srv/venv"
-    galaxy_commit_id: "release_22.01"
+    galaxy_commit_id: "release_21.09"
     galaxy_separate_privileges: yes
     galaxy_create_user: yes
     galaxy_manage_paths: yes
     galaxy_user: galaxy
     galaxy_privsep_user: root
     galaxy_group: galaxy
-    #galaxy_restart_handler_name: Restart Galaxy
+    galaxy_cvmfs_repos_enabled
+    galaxy_restart_handler_name: Restart Galaxy
     dependency_resolvers_config_file: "{{ galaxy_config_dir }}/dependency_resolvers_conf.xml"
     containers_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
     galaxy_singularity_images_cvmfs_path:  "/cvmfs/singularity.galaxyproject.org/all/" # "{{ galaxy_mutable_data_dir }}/cache/singularity"
-    galaxy_systemd_mode: '' # do not want
+    #galaxy_systemd_mode: '' # do not want
     galaxy_config_templates:
     # - src: templates/galaxy/config/tool_conf_interactive.xml.j2
     #  dest: "{{ galaxy_config_dir }}/tool_conf_interactive.xml"
@@ -33,12 +35,12 @@
     galaxy_tool_dependency_dir: "{{ galaxy_mutable_data_dir }}/dependencies"
     galaxy_toolshed_server_dir: "{{ galaxy_server_dir }}"
     galaxy_toolshed_instance_codename: "TestToolshed"
-    #galaxy_toolshed_mutable_config_dir: "{{ galaxy_root }}/var/config"
-    #galaxy_toolshed_mutable_data_dir: "{{ galaxy_root }}/var/data"
-    #galaxy_toolshed_log_dir: "{{ galaxy_toolshed_mutable_data_dir }}/logs"
+    galaxy_toolshed_mutable_config_dir: "{{ galaxy_root }}/var/config"
+    galaxy_toolshed_mutable_data_dir: "{{ galaxy_root }}/var/data"
+    galaxy_toolshed_log_dir: "{{ galaxy_toolshed_mutable_data_dir }}/logs"
     galaxy_toolshed_venv_dir: "{{ galaxy_venv_dir }}"
     galaxy_toolshed_config_dir: "{{ galaxy_root }}/var/config"
-    #galaxy_toolshed_config_file: "{{ galaxy_toolshed_config_dir }}/tool_shed.yml"
+    #galaxy_toolshed_config_file: "{{ galaxy_toolshed_mutable_config_dir }}/tool_shed.yml"
     galaxy_toolshed_config_style: "yaml"
     galaxy_toolshed_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
     galaxy_toolshed_config_id_secret: " some silly rand0m t3xt  @#"
@@ -50,25 +52,21 @@
       - name: galaxy
         owner: galaxy
     galaxy_config:
+      gunicorn:
+        bind: localhost:5000
+        config: "{{ galaxy_server_dir }}/lib/galaxy/web_stack/gunicorn_config.py"
+        gunicorn_extra_args: '--forwarded-allow-ips="*"'
       galaxy:
-        dependency_resolvers_config_file: "{{ galaxy_config_dir }}/dependency_resolvers_conf.xml"
-        containers_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
-        dependency_resolvers:
-        - type: tool_shed_packages
-        - type: galaxy_packages
-        - type: conda
-        - type: galaxy_packages
-          versionless: true
-        - type: conda
-          versionless: true
         enable_mulled_containers: true
-        use_cached_dependency_manager: true
+        dependency_resolvers_config_file: "{{ galaxy_config_dir }}/dependency_resolvers_conf.xml"
+        container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
+        # use_cached_dependency_manager: true
         galaxy_url_prefix: "/galaxy"
         brand: "RossGalaxy"
         admin_users: ross.lazarus@gmail.com
         database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
         #file_path: "{{ galaxy_server_dir}}/database/files"
-        check_migrate_tools: false
+        #check_migrate_tools: false
         tool_data_path: "{{ galaxy_mutable_data_dir }}/tool-data"
         tool_data_table_config_path: /cvmfs/data.galaxyproject.org/byhand/location/tool_data_table_conf.xml,/cvmfs/data.galaxyproject.org/managed/location/tool_data_table_conf.xml
         #, {{ galaxy_config_dir }}/tool_conf_interactive.xml"
@@ -77,7 +75,6 @@
         # SQL Performance
         database_engine_option_server_side_cursors: true
         slow_query_log_threshold: 5
-        enable_per_request_sql_debugging: true
         # File serving Performance
         nginx_x_accel_redirect_base: '/_x_accel_redirect'
         # Automation / Ease of Use / User-facing features
@@ -121,7 +118,12 @@
           - unix_signal:15 gracefully_kill_them_all
         py-call-osafterfork: true
         enable-threads: true
-
+        mule:
+          - lib/galaxy/main.py
+          - lib/galaxy/main.py
+        farm: job-handlers:1,2
+        socket-timeout: 300s
+        harakiri: 300s
     galaxy_toolshed_config:
       gunicorn:
         bind: localhost:9009
@@ -140,7 +142,7 @@
         tool_data_path: "{{ galaxy_toolshed_mutable_data_dir }}/tool-data"
 
         # general stuff
-        database_connection: "sqlite:///./database/community.sqlite?isolation_level=IMMEDIATE"
+        database_connection: "sqlite:///{{ galaxy_toolshed_mutable_config_dir }}/community.sqlite?isolation_level=IMMEDIATE"
         #database_connection: "postgresql:///galaxy_testtoolshed?host=/var/run/postgresql"
         # database_engine_option_server_side_cursors: "True"
         log_level: "DEBUG"
@@ -160,7 +162,7 @@
       become: yes
       become_user: root
       apt:
-        name: ['acl', 'bzip2', 'git', 'make', 'python3-pip', 'python3-virtualenv', 'tar', 'virtualenv', 'mercurial', 'supervisor']
+        name: ['acl', 'bzip2', 'git', 'make', 'python3-pip', 'python3-virtualenv', 'tar', 'virtualenv', 'mercurial', 'uwsgi']
 
   roles:
     - galaxyproject.cvmfs
@@ -171,14 +173,14 @@
     - geerlingguy.pip
     - role: galaxyproject.galaxy
       become_user: galaxy
+    - galaxyproject.slurm
     - role: uchida.miniconda
-      become_user: galaxy
     - gantsign.golang
     - cyverse-ansible.singularity
     - geerlingguy.docker
 #    - usegalaxy_eu.gie_proxy
     - role: galaxyproject.galaxy_toolshed
-      become_user: root
+      become_user: galaxy
 
   tasks:
     - name: Ansible copy file to remote server
@@ -191,9 +193,9 @@
           remote_src: yes
           directory_mode: yes
 
-  #handlers:
-    #- name: Restart Galaxy
-      #become: yes
-      #systemd:
-        #name: galaxy
-        #state: restarted
+  handlers:
+    - name: Restart Galaxy
+      become: yes
+      systemd:
+        name: galaxy
+        state: restarted
