@@ -31,7 +31,7 @@ cvmfs_install_setuid_cvmfs_remount_sync: no
 
 # Block device to mkfs/mount on stratum0s/stratum1s
 #cvmfs_srv_device: false
-cvmfs_srv_mount: /srv
+cvmfs_srv_mount: "{{ galaxy_root }}/cvmfs"
 
 cvmfs_union_fs: overlayfs
 cvmfs_config_apache: true

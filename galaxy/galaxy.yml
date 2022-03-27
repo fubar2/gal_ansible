@@ -1,11 +1,5 @@
 ---
-- name: galaxy
-  hosts: galaxyservers
-  vars:
-    galaxy_server_dir: /evol/srv/galaxy/galcode
-    galaxy_root: /evol/srv/galaxy
-    galaxy_instance_hostname: ross.genomicsvl-students.cloud.edu.au
-    galaxy_config_admin_users: "ross.lazarus@gmail.com,admin@galaxy.org"
+- hosts: galaxyservers
   become: true
   become_user: root
   vars_files:
@@ -14,7 +8,26 @@
     - name: Install Dependencies
       package:
         name: ['acl', 'bzip2', 'git', 'make', 'python3-psycopg2', 'tar', 'virtualenv']
+    - name: Install library package
+      block:
+          - file:
+             path: /evol/srv/libraries
+             state: absent
+             owner: galaxy
+          - git:
+             repo: 'https://github.com/usegalaxy-eu/libraries-training-repo'
+             dest: /evol/srv/libraries/
+          - file:
+             path: /evol/srv/libraries/admin
+             state: directory
+             owner: galaxy
+  post_tasks:
+    - name: Install slurm-drmaa
+      package:
+        name: slurm-drmaa1
   roles:
+    - galaxyproject.repos
+    - galaxyproject.slurm
     - galaxyproject.postgresql
     - role: natefoo.postgresql_objects
       become: true
@@ -26,8 +39,11 @@
     - role: uchida.miniconda
       become: true
       become_user: "{{ galaxy_user.name }}"
+    #- usegalaxy_eu.rabbitmq
     - galaxyproject.nginx
+    - galaxyproject.proftpd
+    - galaxyproject.tusd
     - galaxyproject.cvmfs
-#    - geerlingguy.docker
-#    - usegalaxy_eu.gie_proxy
-
+    #- galaxyproject.gxadmin
+    #- dj-wasabi.telegraf
+    #- usegalaxy_eu.tiaas2
